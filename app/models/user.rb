@@ -29,4 +29,13 @@ class User < ActiveRecord::Base
   def my_timeline
     User.union([posts, friend_posts], :distinct => true, :order => 'created_at DESC', :limit => 20)
   end 
+
+  def self.search(search)
+    if search
+      User.where("name LIKE ? OR email LIKE ?", "%#{search}%", "%#{search}%")
+    else
+      all
+    end
+  end
+
 end

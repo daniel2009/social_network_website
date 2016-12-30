@@ -1,4 +1,4 @@
-source 'https://rubygems.org'
+source 'http://rubygems.org'
 
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
@@ -39,6 +39,7 @@ gem 'searchkick', '~> 0.8.7'
 gem 'paperclip', '~> 4.2.1'
 gem 'geocoder', '~> 1.2.8'
 gem 'kaminari'
+gem 'will_paginate'
 gem 'acts_as_votable', '~> 0.10.0'
 
 group :development, :test do

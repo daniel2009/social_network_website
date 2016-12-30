@@ -6,7 +6,17 @@ class UsersController < ApplicationController
   def index
     @user = current_user
     @post = Post.new
-    @posts = current_user.friend_posts.all.order('created_at DESC').page(params[:page]).per(5)
+
+    # @posts_temp = current_user.friend_posts.all.order('created_at DESC')
+    # @posts = []
+    # @posts_temp.each do |post|
+    #   if post.user == current_user || post.circle == nil || (!current_user.inverse_friendships.where(user_id: post.user).empty? && post.circle == current_user.inverse_friendships.where(user_id: post.user).first.circle)
+    #     @posts << post
+    #   end 
+    # end
+    # @posts = @posts.all.page(params[:page]).per(5)
+
+    @posts = current_user.friend_posts.all.order('created_at DESC').paginate(page: params[:page], :per_page => 10)
     @circles = current_user.circles.all.order('circle_name')
     @ip = remote_ip()
     # debugger
@@ -16,11 +26,12 @@ class UsersController < ApplicationController
     @nearby = params[:nearby].present?
     @within = params[:within].present?
     if params[:search].present?
-      @users = User.search(params[:search],fields: [:email, :name], operator: "or")
+      @users = User.search(params[:search])
+  
       if @within
         @posts = Post.search(params[:search],fields: [:text], where: {created_at: {gt: Time.now - params[:within].to_i*3600*24}}, page: params[:page], per_page: 15)
       else 
-        @posts = Post.search(params[:search],fields: [:text], page: params[:page], per_page: 15)
+        @posts = Post.search(params[:search]).paginate(page: params[:page], :per_page => 15)
       end 
       
       if @nearby
@@ -43,14 +54,14 @@ class UsersController < ApplicationController
       end 
     else 
       @users = User.all
-      @posts = current_user.posts.all.order('created_at DESC').page(params[:page]).per(5)
+      @posts = current_user.posts.all.paginate(page: params[:page], :per_page => 5)
       
     end 
     # debugger
   end 
 
   def show
-    @posts = @user.posts.all.order("created_at DESC").page(params[:page]).per(5)
+    @posts = @user.posts.all.order("created_at DESC").paginate(page: params[:page], :per_page => 5)
     @isFriend = false
     @sentRequest = false
 
